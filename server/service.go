@@ -93,7 +93,6 @@ func (h servicePort) handleGet(w http.ResponseWriter, r *http.Request) {
 	// Deal with the request in application layer
 	doc, err := h.service.GetBaseDocumentByID(r.Context(), id)
 	if err != nil || doc == nil {
-		fmt.Println(doc)
 		utils.WriteError(fmt.Errorf("could not find document: %v", err), w, 500)
 		return;
 	}
@@ -118,7 +117,6 @@ func (h servicePort) handleGetSince(w http.ResponseWriter, r *http.Request) {
 	// Deal with the request in application layer
 	docs, err := h.service.GetAllCreatedSince(r.Context(), date)
 	if err != nil || docs == nil {
-		fmt.Println(docs)
 		utils.WriteError(fmt.Errorf("could not find documents: %v", err), w, 500)
 		return;
 	}

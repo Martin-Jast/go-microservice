@@ -89,7 +89,6 @@ func (m MongoAdapter) Delete(ctx context.Context, id string) error {
 }
 
 func (m MongoAdapter) GetAllCreatedSince(ctx context.Context, date time.Time) (docs []BaseModel, err error) {
-	fmt.Println(date)
 	result, err := m.mongoConnection.Find(ctx, bson.M{"created_at": bson.M{"$gt": primitive.NewDateTimeFromTime(date)}})
 	if err != nil {
 		return nil, err
