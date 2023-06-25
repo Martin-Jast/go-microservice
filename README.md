@@ -4,8 +4,11 @@ Example of a Go microservice with API points, DB connection and modular architec
 
 ## To run:
 Install the dependencies with "go get ./..."
+
 Run the microservice with "go run ./..."
-Tests can be run using the makefile or individually with 
+
+Tests can be run using the makefile or individually with:
+
 "go test -timeout 30s -run ^TestService_Mongo$ github.com/Martin-Jast/go-microservice/server"
 
 
