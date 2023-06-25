@@ -14,3 +14,8 @@ Tests can be run using the makefile or individually with:
 
 
 When testing try to use a docker that will put the mongoDB up so it has a clean database when it starts or remember to drop the database between tests ( to make sure no database is wrongly dropped the code don't do that )
+
+Also it requires a .env file with the following vars ( change <mongo-string> for your connection string):
+
+MONGO_STRING="<mongo-string>"
+PORT="4000"
