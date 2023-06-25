@@ -17,5 +17,7 @@ When testing try to use a docker that will put the mongoDB up so it has a clean 
 
 Also it requires a .env file with the following vars ( change <mongo-string> for your connection string):
 
+
 MONGO_STRING="<mongo-string>"
+
 PORT="4000"
