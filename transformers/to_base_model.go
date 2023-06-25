@@ -16,7 +16,7 @@ type BaseModelResponse struct {
 
 func ToBaseModelResponse(b persistence.BaseModel) BaseModelResponse {
 	return BaseModelResponse{
-		ID: utils.StrPnt(b.ID.Hex()),
+		ID: utils.StrPnt(*b.ID),
 		Data: b.Data,
 		CreatedAt: b.CreatedAt,
 		DeletedAt: b.DeletedAt,

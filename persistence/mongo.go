@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Martin-Jast/go-microservice/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,13 +21,24 @@ func NewMongoAdapter(dbClient *mongo.Client) MongoAdapter {
 	}
 }
 
+
+// MongoBaseModel small extension of the generic baseModel to accomodate mongoID
+type MongoBaseModel struct {
+	ID *primitive.ObjectID `bson:"_id"`
+	*BaseModel `bson:"inline"`
+}
+
+
 func (m MongoAdapter) Create(ctx context.Context, document BaseModel) (id string, err error) {
+	mBase := MongoBaseModel{}
+
 	if document.ID == nil {
 		temp := primitive.NewObjectID()
-		document.ID = &temp
+		mBase.ID = &temp
 	}
-	document.CreatedAt = time.Now()
-	res, err := m.mongoConnection.InsertOne(ctx, document)
+	mBase.BaseModel = &document
+	mBase.CreatedAt = time.Now()
+	res, err := m.mongoConnection.InsertOne(ctx, mBase)
 	if err != nil {
 		return "", err
 	}
@@ -41,23 +53,24 @@ func (m MongoAdapter) Create(ctx context.Context, document BaseModel) (id string
 
 func (m MongoAdapter) GetByID(ctx context.Context, id string) (doc *BaseModel, err error) {
 	if id == "" {
-		return nil, fmt.Errorf("cannot delete with no id")
+		return nil, fmt.Errorf("cannot GetByID with no id")
 	}
 	asObjID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, fmt.Errorf("invalid objectID to delete")
+		return nil, fmt.Errorf("invalid objectID to find")
 	}
 	result := m.mongoConnection.FindOne(ctx, bson.M{"_id": asObjID})
 	if result.Err() != nil {
 		return nil, result.Err()
 
 	}
-	res := BaseModel{}
+	res := MongoBaseModel{}
 	err = result.Decode(&res)
 	if err != nil {
 		return nil, err
 	}
-	return &res, nil
+	res.BaseModel.ID = utils.StrPnt(res.ID.Hex())
+	return res.BaseModel, nil
 }
 
 func (m MongoAdapter) Delete(ctx context.Context, id string) error {
@@ -77,14 +90,17 @@ func (m MongoAdapter) GetAllCreatedSince(ctx context.Context, date time.Time) (d
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close(ctx)
+
 	list := []BaseModel{}
 	for result.Next(ctx) {
-		elem := BaseModel{}
+		elem := MongoBaseModel{}
 		err = result.Decode(&elem)
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, elem)
+		elem.BaseModel.ID = utils.StrPnt(elem.ID.Hex())
+		list = append(list, *elem.BaseModel)
 	}
 
 	return list, nil

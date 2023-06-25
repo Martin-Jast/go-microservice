@@ -3,13 +3,11 @@ package persistence
 import (
 	"context"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // BaseModel a simple generic DB document model to be used on this example
 type BaseModel struct {
-	ID *primitive.ObjectID `bson:"_id"`
+	ID *string `bson:"_id"`
 	Data string
 	CreatedAt time.Time `bson:"created_at"`
 	DeletedAt *time.Time `bson:"deleted_at,omitempty"`
