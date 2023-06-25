@@ -18,7 +18,7 @@ func ToBaseModelResponse(b persistence.BaseModel) BaseModelResponse {
 	return BaseModelResponse{
 		ID: utils.StrPnt(*b.ID),
 		Data: b.Data,
-		CreatedAt: b.CreatedAt,
+		CreatedAt: *b.CreatedAt,
 		DeletedAt: b.DeletedAt,
 	}
 }

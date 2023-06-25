@@ -37,7 +37,10 @@ func (m MongoAdapter) Create(ctx context.Context, document BaseModel) (id string
 		mBase.ID = &temp
 	}
 	mBase.BaseModel = &document
-	mBase.CreatedAt = time.Now()
+	if mBase.CreatedAt == nil {
+		temp := time.Now()
+		mBase.CreatedAt = &temp
+	}
 	res, err := m.mongoConnection.InsertOne(ctx, mBase)
 	if err != nil {
 		return "", err
@@ -86,7 +89,8 @@ func (m MongoAdapter) Delete(ctx context.Context, id string) error {
 }
 
 func (m MongoAdapter) GetAllCreatedSince(ctx context.Context, date time.Time) (docs []BaseModel, err error) {
-	result, err := m.mongoConnection.Find(ctx, bson.M{"created_at": bson.M{"$gt": date}})
+	fmt.Println(date)
+	result, err := m.mongoConnection.Find(ctx, bson.M{"created_at": bson.M{"$gt": primitive.NewDateTimeFromTime(date)}})
 	if err != nil {
 		return nil, err
 	}
@@ -104,4 +108,9 @@ func (m MongoAdapter) GetAllCreatedSince(ctx context.Context, date time.Time) (d
 	}
 
 	return list, nil
+}
+
+func (m MongoAdapter) DeleteAll(ctx context.Context) (error) {
+	_, err := m.mongoConnection.DeleteMany(ctx, bson.M{})
+	return err
 }

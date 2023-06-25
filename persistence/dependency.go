@@ -9,7 +9,7 @@ import (
 type BaseModel struct {
 	ID *string `bson:"_id"`
 	Data string
-	CreatedAt time.Time `bson:"created_at"`
+	CreatedAt *time.Time `bson:"created_at"`
 	DeletedAt *time.Time `bson:"deleted_at,omitempty"`
 }
 
@@ -20,4 +20,5 @@ type PersistenceAdapter interface {
 	GetByID(ctx context.Context, id string) ( doc *BaseModel, err error)
 	Delete(ctx context.Context, id string) error
 	GetAllCreatedSince(ctx context.Context, date time.Time) (docs []BaseModel, err error)
+	DeleteAll(ctx context.Context) error
 }
